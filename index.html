@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- HTML5-QRCode Scanner Library (cdnjs build) -->
+    <!-- HTML5-QRCode Scanner Library (穩定版) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <!-- Tone.js for audio feedback -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
@@ -38,7 +38,7 @@
         #reader {
             width: 100% !important;
             height: 100% !important;
-            min-height: 260px;
+            min-height: 280px;
             background: #090d16;
             border-radius: 0.75rem;
             overflow: hidden;
@@ -49,16 +49,16 @@
             object-fit: cover !important;
             width: 100% !important;
             height: 100% !important;
-            min-height: 260px !important;
+            min-height: 280px !important;
             display: block !important;
         }
         #reader__scan_region { background: transparent !important; }
         .scanner-laser {
-            animation: scan-move 1.8s ease-in-out infinite;
+            animation: scan-move 1.6s ease-in-out infinite;
         }
         @keyframes scan-move {
-            0%, 100% { top: 12%; opacity: 0.3; }
-            50% { top: 88%; opacity: 1; }
+            0%, 100% { top: 15%; opacity: 0.3; }
+            50% { top: 85%; opacity: 1; }
         }
     </style>
 </head>
@@ -74,7 +74,7 @@
                     <div class="flex items-center gap-1.5">
                         <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">門市進貨條碼錄入</h1>
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 嚴格模式
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> v2.6 就緒
                         </span>
                     </div>
                     <div class="flex items-center gap-2 mt-0.5">
@@ -88,7 +88,7 @@
             <div class="flex items-center gap-1.5">
                 <button onclick="openCatalogModal()" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95" title="匯入或管理 SN 品名對照表">
                     <i class="ph-bold ph-tag text-sm text-amber-600"></i>
-                    <span class="hidden sm:inline">品名對照</span>
+                    <span class="hidden sm:inline">品名庫</span>
                 </button>
                 <button onclick="openBackupSyncModal()" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95" title="資料安全備份與匯出">
                     <i class="ph-bold ph-shield-check text-sm text-blue-600"></i>
@@ -174,8 +174,8 @@
                 </div>
 
                 <!-- Camera stream container -->
-                <div class="relative bg-slate-950 rounded-xl overflow-hidden min-h-[260px] flex items-center justify-center cursor-pointer" onclick="triggerManualRefocus()">
-                    <div id="reader" class="w-full h-full min-h-[260px]"></div>
+                <div class="relative bg-slate-950 rounded-xl overflow-hidden min-h-[280px] flex items-center justify-center cursor-pointer" onclick="triggerManualRefocus()">
+                    <div id="reader" class="w-full h-full min-h-[280px]"></div>
                     
                     <!-- Scanner Guide Frame -->
                     <div id="scanner-overlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-3 hidden">
@@ -187,7 +187,7 @@
                             <div class="w-full h-0.5 bg-brand-400 absolute scanner-laser shadow-[0_0_8px_#f97316]"></div>
                         </div>
                         <div class="mt-2 text-center bg-black/80 px-3.5 py-1 rounded-full border border-white/10 text-white text-[11px] font-medium shadow flex items-center gap-1.5">
-                            <span class="text-amber-400 font-bold">精準鎖定「5碼/序號」條碼</span> (自動過濾國際條碼與外箱碼)
+                            <span class="text-amber-400 font-bold">精準辨識「5碼/序號」條碼</span>
                         </div>
                     </div>
 
@@ -198,7 +198,7 @@
                         </div>
                         <h3 class="font-bold text-base mb-1">手機相機掃描錄入</h3>
                         <p class="text-xs text-slate-400 mb-4 max-w-xs leading-relaxed">
-                            對準外盒「5碼/序號」條碼（如 71020/Y6UA00479），系統即自動精準辨識並防重錄入！
+                            對準外盒「5碼/序號」條碼（如 71020/Y6UA00479），鏡頭或條碼槍皆自動秒速錄入！
                         </p>
                         <button onclick="userTriggerStartScanner()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-brand-500/30 transition active:scale-95 flex items-center gap-2">
                             <i class="ph-bold ph-camera text-lg"></i> 啟動相機鏡頭
@@ -245,10 +245,10 @@
                 <div class="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
                     <span class="flex items-center gap-1">
                         <i class="ph-bold ph-shield-check text-emerald-600"></i>
-                        唯一標準格式：<strong>5 碼數字/序號</strong>（如 71020/Y6UA00479）
+                        唯一標準格式：<strong>5 碼數字/序號</strong>
                     </span>
-                    <span id="barcode-gun-status" class="text-emerald-600 font-bold hidden flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 條碼槍就緒
+                    <span id="barcode-gun-status" class="text-emerald-600 font-bold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 條碼槍全天候監聽中
                     </span>
                 </div>
             </div>
@@ -264,7 +264,8 @@
                 
                 <div id="latest-scan-content" class="text-center py-4 text-slate-400">
                     <i class="ph-thin ph-barcode text-4xl mb-1 block"></i>
-                    <p class="text-xs">請用相機鏡頭或外接條碼槍刷入商品「5碼/序號」條碼</p>
+                    <p class="text-xs">請用相機鏡頭或條碼槍刷入商品「5碼/序號」條碼</p>
+                    <p class="text-[10px] text-slate-300 mt-1">（外接條碼槍扣下板機即可秒錄，免點選輸入框）</p>
                 </div>
             </div>
         </section>
@@ -308,4 +309,4 @@
                     <span class="text-xs font-bold text-slate-800">刷入流水帳明細</span>
                     <p class="text-[10px] text-slate-400">依刷入時間由新到舊排序</p>
                 </div>
-                <span id="history-count-badge" class="text-xs bg-slate-100 px-2 py-0.5 rounded-full font-mono font-bol
+                <span id="history-count-badge" class="text-xs bg-slate-100
