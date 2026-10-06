@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>門市進貨條碼多人即時協作系統</title>
+    <title>門市進貨條碼快速錄入系統</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- HTML5-QRCode Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <!-- Tone.js for high-fidelity audio feedback -->
+    <!-- Tone.js for audio feedback -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <!-- SheetJS (xlsx.full.min.js) for robust Excel parsing & exporting -->
+    <!-- SheetJS for robust Excel parsing & exporting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         tailwind.config = {
@@ -63,18 +63,6 @@
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col font-sans select-none pb-24">
-    <!-- LINE / 內嵌瀏覽器醒目橫幅警告 -->
-    <div id="inapp-browser-warning" class="bg-amber-500 text-slate-900 px-3.5 py-1.5 text-xs font-bold flex items-center justify-between shadow-md sticky top-0 z-50">
-        <div class="flex items-center gap-2 truncate">
-            <i class="ph-bold ph-warning-octagon text-lg flex-shrink-0 animate-bounce"></i>
-            <span class="leading-snug truncate">若畫面黑屏：點右上「<span class="underline font-black">···</span>」選<strong>【在 Chrome / 瀏覽器中開啟】</strong></span>
-        </div>
-        <button onclick="document.getElementById('inapp-browser-warning').remove()" class="text-slate-900 hover:text-black p-1 flex-shrink-0">
-            <i class="ph-bold ph-x text-base"></i>
-        </button>
-    </div>
-
-    <!-- Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
             <div class="flex items-center space-x-2.5">
@@ -83,32 +71,27 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
-                        <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">門市進貨多人即時協作</h1>
-                        <span id="sync-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 flex items-center gap-1">
-                            <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span> 連線中
+                        <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">門市進貨條碼錄入</h1>
+                        <span id="sync-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> 系統就緒
                         </span>
                     </div>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span id="cloud-save-indicator" onclick="openBackupSyncModal()" class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 flex items-center gap-1 cursor-pointer hover:bg-emerald-100 transition" title="點擊檢視雲端備份狀態">
-                            <i class="ph-bold ph-cloud-check text-xs"></i> 雲端自動存檔中
+                        <span id="cloud-save-indicator" onclick="openBackupSyncModal()" class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 flex items-center gap-1 cursor-pointer hover:bg-emerald-100 transition" title="點擊檢視本機安全快取狀態">
+                            <i class="ph-bold ph-shield-check text-xs"></i> 本機雙保險存檔已就緒
                         </span>
                     </div>
                 </div>
             </div>
             <!-- Quick Actions -->
             <div class="flex items-center gap-1.5">
-                <!-- 品名對照管理按鈕 -->
                 <button onclick="openCatalogModal()" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95" title="匯入或管理 SN 品名對照表">
                     <i class="ph-bold ph-tag text-sm text-amber-600"></i>
                     <span class="hidden sm:inline">品名對照</span>
                 </button>
-                <!-- 雲端備份按鈕 -->
-                <button onclick="openBackupSyncModal()" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95" title="Google 雲端硬碟備份與安全防呆">
+                <button onclick="openBackupSyncModal()" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95" title="資料安全備份與匯出">
                     <i class="ph-bold ph-shield-check text-sm text-blue-600"></i>
-                    <span class="hidden sm:inline">雲端備份</span>
-                </button>
-                <button onclick="refreshCloudDataManual()" class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition active:scale-95" title="手動同步雲端最新資料">
-                    <i class="ph-bold ph-arrows-clockwise text-sm"></i>
+                    <span class="hidden sm:inline">安全備份</span>
                 </button>
                 <button onclick="openRoomModal()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95">
                     <i class="ph-bold ph-door text-sm text-brand-600"></i>
@@ -117,6 +100,7 @@
             </div>
         </div>
     </header>
+
     <!-- Navigation Tabs -->
     <nav class="max-w-4xl w-full mx-auto px-4 pt-2 pb-1">
         <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-2xl">
@@ -131,14 +115,12 @@
             </button>
         </div>
     </nav>
-    <!-- Main Container -->
-    <main class="flex-1 max-w-4xl w-full mx-auto p-3 sm:p-4 space-y-3">
 
-        <!-- Top Overview Card -->
+    <main class="flex-1 max-w-4xl w-full mx-auto p-3 sm:p-4 space-y-3">
         <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
             <div class="flex items-center gap-4 sm:gap-6">
                 <div>
-                    <div class="text-[11px] font-medium text-slate-500">全員已刷總數</div>
+                    <div class="text-[11px] font-medium text-slate-500">已刷總數</div>
                     <div class="text-2xl font-black text-brand-600 mt-0.5 flex items-baseline gap-1">
                         <span id="stat-total-scanned">0</span>
                         <span class="text-xs font-normal text-slate-500">件</span>
@@ -154,7 +136,7 @@
                 </div>
                 <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
                 <div class="hidden sm:block">
-                    <div class="text-[11px] font-medium text-slate-500">本機貢獻</div>
+                    <div class="text-[11px] font-medium text-slate-500">本機刷入</div>
                     <div class="text-2xl font-black text-emerald-600 mt-0.5 flex items-baseline gap-1">
                         <span id="stat-my-scanned">0</span>
                         <span class="text-xs font-normal text-slate-500">件</span>
@@ -163,18 +145,17 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <button onclick="openBackupSyncModal()" class="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-semibold flex items-center gap-1 active:scale-95 transition" title="儲存備份至雲端硬碟">
+                <button onclick="openBackupSyncModal()" class="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-semibold flex items-center gap-1 active:scale-95 transition" title="儲存備份檔案">
                     <i class="ph-bold ph-shield-check text-sm"></i>
                     <span class="hidden sm:inline">安全備份</span>
                 </button>
-                <!-- 匯出總表按鈕：必定喚起匯出中心彈窗 -->
                 <button id="btn-export-main" onclick="openExportModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer">
                     <i class="ph-bold ph-download-simple text-sm text-amber-400"></i>
                     <span>匯出總表</span>
                 </button>
             </div>
         </section>
-        <!-- Tab 1: Scanner View -->
+
         <section id="tab-scan" class="space-y-3">
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 overflow-hidden">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
@@ -184,8 +165,7 @@
                     </div>
                     
                     <div class="flex items-center gap-1.5 flex-wrap">
-                        <select id="camera-select" onchange="switchCameraManually(this.value)" class="hidden text-xs bg-slate-100 text-slate-700 rounded-lg px-2 py-1 font-medium border-0 focus:ring-1 focus:ring-brand-500">
-                        </select>
+                        <select id="camera-select" onchange="switchCameraManually(this.value)" class="hidden text-xs bg-slate-100 text-slate-700 rounded-lg px-2 py-1 font-medium border-0 focus:ring-1 focus:ring-brand-500"></select>
                         <button id="torch-btn" onclick="toggleTorch()" class="hidden px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition flex items-center gap-1" title="開關補光燈">
                             <i class="ph-bold ph-flashlight"></i> <span id="torch-label">補光</span>
                         </button>
@@ -233,8 +213,9 @@
                         </button>
                     </div>
                 </div>
+
                 <!-- 中文輸入法即時警告橫幅 -->
-                <div id="ime-warning-banner" class="hidden mt-2 p-2 bg-rose-50 border border-rose-300 rounded-xl text-rose-700 text-xs font-bold flex items-center justify-between animate-bounce">
+                <div id="ime-warning-banner" class="hidden mt-2 p-2 bg-rose-50 border border-rose-300 rounded-xl text-rose-700 text-xs font-bold flex items-center justify-between">
                     <div class="flex items-center gap-1.5">
                         <i class="ph-bold ph-warning text-base flex-shrink-0"></i>
                         <span id="ime-warning-text">⚠️ 偵測到中文/注音輸入法！系統已自動還原，建議切換為純英文模式。</span>
@@ -295,7 +276,7 @@
                 </div>
             </div>
         </section>
-        <!-- Tab 2: Model Summary -->
+
         <section id="tab-summary" class="hidden space-y-3">
             <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex items-center justify-between gap-2">
                 <div class="relative flex-1">
@@ -303,4 +284,22 @@
                         <i class="ph-bold ph-magnifying-glass"></i>
                     </span>
                     <input id="summary-search-input" type="text" placeholder="搜尋 5 碼型號或品名..." 
-                           o
+                           oninput="renderSummaryList()"
+                           class="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="openCatalogModal()" class="px-3 py-2 text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-xl text-xs font-semibold transition active:scale-95 whitespace-nowrap">
+                        品名庫
+                    </button>
+                    <button onclick="clearRoomDataWithConfirm()" class="px-3 py-2 text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl text-xs font-semibold transition active:scale-95 whitespace-nowrap">
+                        清空批次
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-blue-50/80 border border-blue-200 rounded-xl p-2.5 text-xs text-blue-800 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-shield-check text-blue-600 text-base flex-shrink-0"></i>
+                    <span>已啟用<strong>【小米正品 SN 深度校驗】</strong>（自動過濾紙箱標籤碼 18504）</span>
+                </div>
+                <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">精準模式</spa
