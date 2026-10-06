@@ -11,8 +11,6 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- HTML5-QRCode Scanner Library (穩定版) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
-    <!-- Tone.js for audio feedback -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <!-- SheetJS for Excel parsing & exporting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
@@ -74,7 +72,7 @@
                     <div class="flex items-center gap-1.5">
                         <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">門市進貨條碼錄入</h1>
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> v2.6 就緒
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> v2.7 精準5碼版
                         </span>
                     </div>
                     <div class="flex items-center gap-2 mt-0.5">
@@ -245,7 +243,7 @@
                 <div class="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
                     <span class="flex items-center gap-1">
                         <i class="ph-bold ph-shield-check text-emerald-600"></i>
-                        唯一標準格式：<strong>5 碼數字/序號</strong>
+                        唯一標準格式：<strong>嚴格 5 碼型號/序號</strong>
                     </span>
                     <span id="barcode-gun-status" class="text-emerald-600 font-bold flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 條碼槍全天候監聽中
@@ -294,7 +292,7 @@
             <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-2.5 text-xs text-emerald-800 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i class="ph-bold ph-shield-check text-emerald-600 text-base flex-shrink-0"></i>
-                    <span>已啟用<strong>【精準 SN 辨識】</strong>（只接收 5 碼/序號，過濾 EAN 條碼與外箱碼 18504）</span>
+                    <span>已啟用<strong>【精準 5 碼 SN 辨識】</strong>（過濾 EAN 條碼、外箱包材碼 18504 與非 5 碼型號）</span>
                 </div>
                 <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">精準比對</span>
             </div>
@@ -309,4 +307,6 @@
                     <span class="text-xs font-bold text-slate-800">刷入流水帳明細</span>
                     <p class="text-[10px] text-slate-400">依刷入時間由新到舊排序</p>
                 </div>
-                <span id="history-count-badge" class="text-xs bg-slate-100
+                <span id="history-count-badge" class="text-xs bg-slate-100 px-2 py-0.5 rounded-full font-mono font-bold text-slate-600">0 筆</span>
+            </div>
+            <div id="histo
