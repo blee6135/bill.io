@@ -9,11 +9,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- HTML5-QRCode Scanner Library (Rock-solid cdnjs build) -->
+    <!-- HTML5-QRCode Scanner Library (cdnjs build) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <!-- Tone.js for audio feedback -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <!-- SheetJS for robust Excel parsing & exporting -->
+    <!-- SheetJS for Excel parsing & exporting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         tailwind.config = {
@@ -63,6 +63,7 @@
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col font-sans select-none pb-24">
+    <!-- Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
             <div class="flex items-center space-x-2.5">
@@ -72,13 +73,13 @@
                 <div>
                     <div class="flex items-center gap-1.5">
                         <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">門市進貨條碼錄入</h1>
-                        <span id="sync-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 系統就緒
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 嚴格模式
                         </span>
                     </div>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span id="cloud-save-indicator" onclick="openBackupSyncModal()" class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 flex items-center gap-1 cursor-pointer hover:bg-emerald-100 transition" title="點擊檢視本機安全快取狀態">
-                            <i class="ph-bold ph-shield-check text-xs"></i> 本機防關閉雙保險已就緒
+                        <span id="cloud-save-indicator" onclick="openBackupSyncModal()" class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 flex items-center gap-1 cursor-pointer hover:bg-emerald-100 transition">
+                            <i class="ph-bold ph-shield-check text-xs"></i> 本機防關閉安全存檔就緒
                         </span>
                     </div>
                 </div>
@@ -91,7 +92,7 @@
                 </button>
                 <button onclick="openBackupSyncModal()" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95" title="資料安全備份與匯出">
                     <i class="ph-bold ph-shield-check text-sm text-blue-600"></i>
-                    <span class="hidden sm:inline">安全備份</span>
+                    <span class="hidden sm:inline">備份</span>
                 </button>
                 <button onclick="openRoomModal()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95">
                     <i class="ph-bold ph-door text-sm text-brand-600"></i>
@@ -111,15 +112,18 @@
                 <i class="ph-bold ph-chart-bar text-sm"></i> 型號統計
             </button>
             <button id="nav-history-btn" onclick="switchTab('history')" class="py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
-                <i class="ph-bold ph-clock-counter-clockwise text-sm"></i> 全員紀錄
+                <i class="ph-bold ph-clock-counter-clockwise text-sm"></i> 流水明細
             </button>
         </div>
     </nav>
+
+    <!-- Main Container -->
     <main class="flex-1 max-w-4xl w-full mx-auto p-3 sm:p-4 space-y-3">
+        <!-- Stats Summary Header Card -->
         <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
             <div class="flex items-center gap-4 sm:gap-6">
                 <div>
-                    <div class="text-[11px] font-medium text-slate-500">已刷總數</div>
+                    <div class="text-[11px] font-medium text-slate-500">已刷入總數</div>
                     <div class="text-2xl font-black text-brand-600 mt-0.5 flex items-baseline gap-1">
                         <span id="stat-total-scanned">0</span>
                         <span class="text-xs font-normal text-slate-500">件</span>
@@ -133,22 +137,10 @@
                         <span class="text-xs font-normal text-slate-500">款</span>
                     </div>
                 </div>
-                <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
-                <div class="hidden sm:block">
-                    <div class="text-[11px] font-medium text-slate-500">本機刷入</div>
-                    <div class="text-2xl font-black text-emerald-600 mt-0.5 flex items-baseline gap-1">
-                        <span id="stat-my-scanned">0</span>
-                        <span class="text-xs font-normal text-slate-500">件</span>
-                    </div>
-                </div>
             </div>
 
             <div class="flex items-center gap-2">
-                <button onclick="openBackupSyncModal()" class="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-semibold flex items-center gap-1 active:scale-95 transition" title="儲存備份檔案">
-                    <i class="ph-bold ph-shield-check text-sm"></i>
-                    <span class="hidden sm:inline">安全備份</span>
-                </button>
-                <button id="btn-export-main" onclick="openExportModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer">
+                <button id="btn-export-main" onclick="openExportModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer">
                     <i class="ph-bold ph-download-simple text-sm text-amber-400"></i>
                     <span>匯出總表</span>
                 </button>
@@ -195,7 +187,7 @@
                             <div class="w-full h-0.5 bg-brand-400 absolute scanner-laser shadow-[0_0_8px_#f97316]"></div>
                         </div>
                         <div class="mt-2 text-center bg-black/80 px-3.5 py-1 rounded-full border border-white/10 text-white text-[11px] font-medium shadow flex items-center gap-1.5">
-                            <span class="text-amber-400 font-bold">對準外盒 SN 條碼</span> (自動辨識並秒速錄入)
+                            <span class="text-amber-400 font-bold">精準鎖定「5碼/序號」條碼</span> (自動過濾國際條碼與外箱碼)
                         </div>
                     </div>
 
@@ -206,7 +198,7 @@
                         </div>
                         <h3 class="font-bold text-base mb-1">手機相機掃描錄入</h3>
                         <p class="text-xs text-slate-400 mb-4 max-w-xs leading-relaxed">
-                            點擊下方按鈕啟動鏡頭。系統會自動辨識 Code 128 / QR，對準外盒 SN 條碼立即全自動錄入！
+                            對準外盒「5碼/序號」條碼（如 71020/Y6UA00479），系統即自動精準辨識並防重錄入！
                         </p>
                         <button onclick="userTriggerStartScanner()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-brand-500/30 transition active:scale-95 flex items-center gap-2">
                             <i class="ph-bold ph-camera text-lg"></i> 啟動相機鏡頭
@@ -218,7 +210,7 @@
                 <div id="ime-warning-banner" class="hidden mt-2 p-2 bg-rose-50 border border-rose-300 rounded-xl text-rose-700 text-xs font-bold flex items-center justify-between">
                     <div class="flex items-center gap-1.5">
                         <i class="ph-bold ph-warning text-base flex-shrink-0"></i>
-                        <span id="ime-warning-text">⚠️ 偵測到中文/注音輸入法！系統已自動還原，建議切換為純英文模式。</span>
+                        <span id="ime-warning-text">⚠️ 偵測到注音輸入法！系統已自動還原為英數條碼。</span>
                     </div>
                     <button onclick="dismissImeWarning()" class="text-rose-500 hover:text-rose-800 p-0.5">
                         <i class="ph-bold ph-x text-sm"></i>
@@ -236,7 +228,7 @@
                                autocomplete="off"
                                autocapitalize="characters"
                                spellcheck="false"
-                               placeholder="條碼槍扣板機直接刷入 (免按 Enter 自動錄入)" 
+                               placeholder="條碼槍直接刷入（免按 Enter 自動錄入）" 
                                class="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm font-mono bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition"
                                onkeydown="handleGunKeyDown(event)"
                                oninput="handleGunInput(this)">
@@ -252,14 +244,15 @@
                 </div>
                 <div class="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
                     <span class="flex items-center gap-1">
-                        <i class="ph-bold ph-lightning text-amber-500"></i>
-                        支援 5 碼型號、5碼/序號、純序號，刷入即秒速自動入庫
+                        <i class="ph-bold ph-shield-check text-emerald-600"></i>
+                        唯一標準格式：<strong>5 碼數字/序號</strong>（如 71020/Y6UA00479）
                     </span>
                     <span id="barcode-gun-status" class="text-emerald-600 font-bold hidden flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 條碼槍已就緒
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 條碼槍就緒
                     </span>
                 </div>
             </div>
+
             <!-- Recent scan status card -->
             <div id="latest-scan-card" class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 transition-all duration-300">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
@@ -271,7 +264,7 @@
                 
                 <div id="latest-scan-content" class="text-center py-4 text-slate-400">
                     <i class="ph-thin ph-barcode text-4xl mb-1 block"></i>
-                    <p class="text-xs">請用相機鏡頭或外接條碼槍刷入商品 SN 條碼，系統自動錄入並防重複！</p>
+                    <p class="text-xs">請用相機鏡頭或外接條碼槍刷入商品「5碼/序號」條碼</p>
                 </div>
             </div>
         </section>
@@ -297,7 +290,22 @@
                 </div>
             </div>
 
-            <div class="bg-blue-50/80 border border-blue-200 rounded-xl p-2.5 text-xs text-blue-800 flex items-center justify-between">
+            <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-2.5 text-xs text-emerald-800 flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <i class="ph-bold ph-shield-check text-blue-600 text-base flex-shrink-0"></i>
-                    <span>已啟用<s
+                    <i class="ph-bold ph-shield-check text-emerald-600 text-base flex-shrink-0"></i>
+                    <span>已啟用<strong>【精準 SN 辨識】</strong>（只接收 5 碼/序號，過濾 EAN 條碼與外箱碼 18504）</span>
+                </div>
+                <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">精準比對</span>
+            </div>
+
+            <div id="summary-list-container" class="space-y-2.5"></div>
+        </section>
+
+        <!-- HISTORY TAB -->
+        <section id="tab-history" class="hidden space-y-3">
+            <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-slate-800">刷入流水帳明細</span>
+                    <p class="text-[10px] text-slate-400">依刷入時間由新到舊排序</p>
+                </div>
+                <span id="history-count-badge" class="text-xs bg-slate-100 px-2 py-0.5 rounded-full font-mono font-bol
