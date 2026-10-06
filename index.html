@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -58,11 +58,11 @@
             50% { top: 85%; opacity: 1; }
         }
         @keyframes flash-success {
-            0% { background-color: #dcfce7; }
-            100% { background-color: #f8fafc; }
+            0% { background-color: #bbf7d0; transform: scale(1.01); }
+            100% { background-color: #f8fafc; transform: scale(1); }
         }
         .flash-ok {
-            animation: flash-success 0.4s ease-out;
+            animation: flash-success 0.35s ease-out;
         }
     </style>
 </head>
@@ -78,11 +78,11 @@
                     <div class="flex items-center gap-1.5">
                         <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">門市進貨條碼錄入</h1>
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> v2.9 穩定秒錄版
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span> v3.0 即刷即錄版
                         </span>
                     </div>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span id="cloud-save-indicator" onclick="openBackupSyncModal()" class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 flex items-center gap-1 cursor-pointer hover:bg-emerald-100 transition">
+                        <span id="cloud-save-indicator" onclick="openBackupSyncModal()" class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 flex items-center gap-1 cursor-pointer hover:bg-emerald-100 transition">
                             <i class="ph-bold ph-shield-check text-xs"></i> 本機安全存檔就緒
                         </span>
                     </div>
@@ -183,7 +183,7 @@
                     
                     <!-- Scanner Guide Frame -->
                     <div id="scanner-overlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-3 hidden">
-                        <div class="w-80 sm:w-96 h-28 border-2 border-brand-500/90 rounded-2xl relative bg-black/10 backdrop-blur-[0.2px] shadow-lg">
+                        <div class="w-72 sm:w-80 h-28 border-2 border-brand-500/90 rounded-2xl relative bg-black/10 backdrop-blur-[0.2px] shadow-lg">
                             <div class="absolute -top-1.5 -left-1.5 w-4 h-4 border-t-4 border-l-4 border-brand-500 rounded-tl"></div>
                             <div class="absolute -top-1.5 -right-1.5 w-4 h-4 border-t-4 border-r-4 border-brand-500 rounded-tr"></div>
                             <div class="absolute -bottom-1.5 -left-1.5 w-4 h-4 border-b-4 border-l-4 border-brand-500 rounded-bl"></div>
@@ -191,7 +191,7 @@
                             <div class="w-full h-0.5 bg-brand-400 absolute scanner-laser shadow-[0_0_8px_#f97316]"></div>
                         </div>
                         <div class="mt-2 text-center bg-black/80 px-3.5 py-1 rounded-full border border-white/10 text-white text-[11px] font-medium shadow flex items-center gap-1.5">
-                            <span class="text-amber-400 font-bold">精準辨識「5碼/序號」條碼</span>
+                            <span class="text-amber-400 font-bold">對準外盒「5碼/序號」條碼</span>
                         </div>
                     </div>
 
@@ -210,31 +210,20 @@
                     </div>
                 </div>
 
-                <!-- 中文輸入法即時警告橫幅 -->
-                <div id="ime-warning-banner" class="hidden mt-2 p-2 bg-rose-50 border border-rose-300 rounded-xl text-rose-700 text-xs font-bold flex items-center justify-between">
-                    <div class="flex items-center gap-1.5">
-                        <i class="ph-bold ph-warning text-base flex-shrink-0"></i>
-                        <span id="ime-warning-text">⚠️ 偵測到注音輸入法！系統已自動還原為英數條碼。</span>
-                    </div>
-                    <button onclick="dismissImeWarning()" class="text-rose-500 hover:text-rose-800 p-0.5">
-                        <i class="ph-bold ph-x text-sm"></i>
-                    </button>
-                </div>
-
-                <!-- Manual & Gun Input -->
+                <!-- 條碼槍輸入欄位（具備即時即刷即錄引擎） -->
                 <div class="mt-3 flex gap-2">
                     <div class="relative flex-1">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <i class="ph-bold ph-barcode text-base text-brand-600"></i>
                         </span>
                         <input id="manual-sn-input" type="text" 
-                               inputmode="latin"
                                autocomplete="off"
                                autocapitalize="characters"
                                spellcheck="false"
-                               placeholder="條碼槍直接刷入（哨兵 0.15 秒自動吞入）" 
-                               class="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm font-mono bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition"
+                               placeholder="條碼槍直接刷入（扣板機自動秒錄）" 
+                               class="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm font-mono font-bold bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition"
                                onkeydown="handleGunKeyDown(event)"
+                               oninput="handleGunInput(this)"
                                onpaste="handleGunPaste(event)">
                     </div>
                     <button onclick="handleManualSubmit()" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs sm:text-sm font-semibold transition active:scale-95 shadow-sm whitespace-nowrap">
@@ -246,13 +235,15 @@
                         <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleFileScan(this)">
                     </label>
                 </div>
-                <div class="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
-                    <span class="flex items-center gap-1">
-                        <i class="ph-bold ph-shield-check text-emerald-600"></i>
-                        唯一標準格式：<strong>嚴格 5 碼型號/序號</strong>
-                    </span>
-                    <span id="barcode-gun-status" class="text-emerald-600 font-bold flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 哨兵高頻自動吞入中
+
+                <!-- 即時診斷與狀態提示橫幅 -->
+                <div class="mt-2 flex items-center justify-between text-[11px]">
+                    <div id="live-diagnostic-bar" class="text-slate-500 font-mono truncate mr-2 flex items-center gap-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="diagnostic-text">引擎就緒：條碼槍一扣即錄</span>
+                    </div>
+                    <span class="text-slate-400 font-mono text-[10px] whitespace-nowrap flex-shrink-0">
+                        嚴格 5 碼/序號
                     </span>
                 </div>
             </div>
@@ -269,7 +260,7 @@
                 <div id="latest-scan-content" class="text-center py-4 text-slate-400">
                     <i class="ph-thin ph-barcode text-4xl mb-1 block"></i>
                     <p class="text-xs">請用相機鏡頭或條碼槍刷入商品「5碼/序號」條碼</p>
-                    <p class="text-[10px] text-emerald-600 font-bold mt-1">（哨兵已啟動：外接條碼槍扣下板機即可秒錄，免點選輸入框、免按 Enter）</p>
+                    <p class="text-[10px] text-emerald-600 font-bold mt-1">（外接條碼槍扣下板機即可秒錄，免點選輸入框、免按 Enter）</p>
                 </div>
             </div>
         </section>
@@ -307,4 +298,1708 @@
         </section>
 
         <!-- HISTORY TAB -->
-        <section id="
+        <section id="tab-history" class="hidden space-y-3">
+            <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-slate-800">刷入流水帳明細</span>
+                    <p class="text-[10px] text-slate-400">依刷入時間由新到舊排序</p>
+                </div>
+                <span id="history-count-badge" class="text-xs bg-slate-100 px-2 py-0.5 rounded-full font-mono font-bold text-slate-600">0 筆</span>
+            </div>
+            <div id="history-list-container" class="space-y-2"></div>
+        </section>
+    </main>
+
+    <!-- EXPORT MODAL -->
+    <div id="export-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 max-h-[92vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold">
+                        <i class="ph-bold ph-download-simple text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">進貨總表匯出中心</h3>
+                        <p class="text-[10px] text-slate-400">批次：<span id="export-modal-batch-name" class="font-mono font-bold text-slate-700">預設批次</span></p>
+                    </div>
+                </div>
+                <button onclick="closeExportModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex items-center justify-between flex-shrink-0">
+                <div>
+                    <div class="text-[10px] text-slate-500">已刷入商品總數</div>
+                    <div class="text-xl font-black text-brand-600"><span id="export-modal-count">0</span> <span class="text-xs font-normal text-slate-500">件</span></div>
+                </div>
+                <div class="h-7 w-px bg-slate-200"></div>
+                <div>
+                    <div class="text-[10px] text-slate-500">商品型號數</div>
+                    <div class="text-xl font-black text-slate-800"><span id="export-modal-models">0</span> <span class="text-xs font-normal text-slate-500">款</span></div>
+                </div>
+            </div>
+
+            <div id="export-modal-status" class="hidden p-2 rounded-xl text-[11px] font-bold"></div>
+
+            <div class="space-y-2 overflow-y-auto flex-1 pr-1 text-xs">
+                <button onclick="exportExcelSpreadsheet()" class="w-full p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl flex items-center justify-between transition shadow-md shadow-emerald-500/20 active:scale-[0.98]">
+                    <div class="flex items-center gap-2.5 text-left">
+                        <i class="ph-bold ph-file-xls text-2xl"></i>
+                        <div>
+                            <div class="font-bold text-xs">下載 Excel 試算表 (.xlsx)</div>
+                            <div class="text-[10px] text-emerald-100">雙工作表：型號數量統計 + 序號流水明細</div>
+                        </div>
+                    </div>
+                    <i class="ph-bold ph-arrow-down text-base"></i>
+                </button>
+
+                <button onclick="downloadCsvSpreadsheetDirect()" class="w-full p-3 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl flex items-center justify-between transition active:scale-[0.98]">
+                    <div class="flex items-center gap-2.5 text-left">
+                        <i class="ph-bold ph-file-csv text-2xl text-amber-400"></i>
+                        <div>
+                            <div class="font-bold text-xs">下載 CSV 試算表 (.csv)</div>
+                            <div class="text-[10px] text-slate-300">UTF-8 格式，任何電腦/手機開檔不亂碼</div>
+                        </div>
+                    </div>
+                    <i class="ph-bold ph-arrow-down text-base"></i>
+                </button>
+
+                <button onclick="copySummaryTextToClipboard()" class="w-full p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl flex items-center justify-between transition text-slate-800 active:scale-[0.98]">
+                    <div class="flex items-center gap-2.5 text-left">
+                        <i class="ph-bold ph-copy text-2xl text-slate-600"></i>
+                        <div>
+                            <div class="font-bold text-xs">一鍵複製統計文字</div>
+                            <div class="text-[10px] text-slate-500">免傳檔案，直接複製並貼進 LINE 群組核對</div>
+                        </div>
+                    </div>
+                    <i class="ph-bold ph-clipboard-text text-base text-slate-400"></i>
+                </button>
+
+                <div id="export-text-fallback-container" class="hidden mt-2 p-2 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-slate-600">已產生報表文字（長按選取複製）：</span>
+                        <button onclick="copyFallbackTextarea()" class="text-[10px] text-brand-600 font-bold underline">重新複製</button>
+                    </div>
+                    <textarea id="export-fallback-textarea" readonly class="w-full h-24 p-1.5 bg-white border border-slate-200 rounded text-[11px] font-mono select-all focus:outline-none"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-1 flex-shrink-0">
+                <button onclick="closeExportModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
+                    關閉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Modal -->
+    <div id="backup-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 max-h-[92vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-shield-check text-blue-600 text-lg"></i>
+                    <h3 class="text-sm font-bold text-slate-800">進貨數據安全備份</h3>
+                </div>
+                <button onclick="closeBackupSyncModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
+
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs space-y-1 flex-shrink-0">
+                <div class="font-bold text-emerald-800 flex items-center gap-1">
+                    <i class="ph-bold ph-check-circle"></i> 本機雙保險快取已啟用
+                </div>
+                <p class="text-[11px] text-emerald-700 leading-relaxed">
+                    每刷一件條碼，手機即時存入本地安全資料庫。<strong>即使誤關網頁或重新整理，再次開啟時都會自動秒速復原！</strong>
+                </p>
+            </div>
+
+            <div class="space-y-2 text-xs overflow-y-auto flex-1 pr-1">
+                <button onclick="exportExcelSpreadsheet()" class="w-full p-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl flex items-center justify-between transition text-left active:scale-[0.98]">
+                    <div class="flex items-center gap-2.5">
+                        <i class="ph-bold ph-file-xls text-2xl text-emerald-600"></i>
+                        <div>
+                            <div class="font-bold text-emerald-950 text-xs">下載 Excel 試算表 (.xlsx)</div>
+                            <div class="text-[10px] text-emerald-700">自動分頁：型號數量統計 + 流水序號明細</div>
+                        </div>
+                    </div>
+                    <i class="ph-bold ph-download text-emerald-600 text-base"></i>
+                </button>
+
+                <button onclick="exportJsonBackup()" class="w-full p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-between transition text-left active:scale-[0.98]">
+                    <div class="flex items-center gap-2.5">
+                        <i class="ph-bold ph-file-code text-2xl text-slate-700"></i>
+                        <div>
+                            <div class="font-bold text-slate-800 text-xs">下載離線備份檔 (.json)</div>
+                            <div class="text-[10px] text-slate-500">將當前所有條碼完整下載備份到手機檔案</div>
+                        </div>
+                    </div>
+                    <i class="ph-bold ph-download text-slate-600 text-base"></i>
+                </button>
+            </div>
+
+            <div class="flex justify-end pt-1 flex-shrink-0">
+                <button onclick="closeBackupSyncModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
+                    關閉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Catalog Modal -->
+    <div id="catalog-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 max-h-[92vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-tag text-amber-600 text-lg"></i>
+                    <h3 class="text-sm font-bold text-slate-800">SN 5碼型號品名對照庫</h3>
+                </div>
+                <button onclick="closeCatalogModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 flex-1 overflow-y-auto pr-1 text-xs">
+                <!-- Excel 匯入區 -->
+                <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2">
+                    <div class="font-bold text-amber-900 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5"><i class="ph-bold ph-file-xls text-amber-600 text-base"></i> 匯入《SN清單.xlsx》</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800">
+                            引擎就緒
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-amber-700 leading-relaxed">
+                        選取您的 Excel 檔案，系統將自動解析 5 碼型號代碼與品名，精準對齊！
+                    </p>
+                    <label class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold flex items-center justify-center gap-1.5 cursor-pointer transition active:scale-[0.98] shadow-sm">
+                        <i class="ph-bold ph-upload-simple"></i>
+                        <span>選取 SN清單.xlsx 立即匯入</span>
+                        <input type="file" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelCatalogUpload(this)">
+                    </label>
+                </div>
+
+                <!-- 手動貼上 -->
+                <div class="space-y-1.5">
+                    <label class="font-bold text-slate-700 block">手動文字快速貼上 (每行一筆：5碼代碼 品名)</label>
+                    <textarea id="catalog-paste-area" rows="3" placeholder="例如：
+71020 Redmi Pad 2 Pro
+67675 Xiaomi 智慧手錶" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-[11px] focus:outline-none focus:ring-1 focus:ring-brand-500"></textarea>
+                    <div class="flex justify-between items-center">
+                        <button onclick="clearEntireCatalogConfirm()" class="text-[10px] text-rose-600 hover:underline">
+                            🧹 一鍵清空品名庫
+                        </button>
+                        <button onclick="savePastedCatalog()" class="px-3 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-bold">
+                            儲存新增
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 已建檔清單 -->
+                <div class="pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-bold text-slate-700">已建檔品名庫 (<span id="modal-catalog-count" class="font-mono text-brand-600 font-black">0</span> 款)</span>
+                        <input id="catalog-search-input" type="text" placeholder="搜尋品名..." oninput="renderCatalogListInModal()" class="px-2 py-0.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-mono w-28">
+                    </div>
+                    <div id="modal-catalog-list" class="space-y-1 max-h-40 overflow-y-auto bg-slate-50 p-2 rounded-xl border border-slate-200 font-mono text-[11px]"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2 border-t border-slate-100 flex-shrink-0">
+                <button onclick="closeCatalogModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
+                    關閉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Name Modal -->
+    <div id="quick-name-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-4 shadow-2xl space-y-3 animate-in fade-in zoom-in duration-150">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <span class="text-xs font-bold text-slate-800">為型號設定商品品名</span>
+                <button onclick="closeQuickNameModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+            <div>
+                <div class="flex items-center gap-1.5 mb-2">
+                    <span class="text-[10px] text-slate-400">商品型號：</span>
+                    <span id="quick-name-code-badge" class="font-mono font-bold text-xs bg-slate-900 text-white px-2 py-0.5 rounded"></span>
+                </div>
+                <input id="quick-name-input" type="text" placeholder="輸入商品品名 (例: Redmi Pad 2 Pro)" 
+                       class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <div class="flex justify-end gap-1.5 pt-1">
+                <button onclick="closeQuickNameModal()" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-semibold">取消</button>
+                <button onclick="saveQuickNameSubmit()" class="px-3 py-1.5 bg-brand-500 text-white rounded-lg text-xs font-bold shadow-sm">儲存品名</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room / Batch Modal -->
+    <div id="room-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-door text-brand-600 text-lg"></i>
+                    <h3 class="text-sm font-bold text-slate-800">進貨批次設定</h3>
+                </div>
+                <button onclick="closeRoomModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">進貨房號 / 批次名稱</label>
+                    <input id="room-id-input" type="text" placeholder="例如: 1003 或 批次A" 
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeRoomModal()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
+                    取消
+                </button>
+                <button onclick="saveRoomSettings()" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-bold shadow-md shadow-brand-500/20">
+                    確認儲存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert / Confirm Modal -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3 animate-in fade-in zoom-in duration-150">
+            <div class="flex items-center gap-2 text-brand-600 font-bold text-base" id="modal-title">系統提示</div>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line" id="modal-desc"></p>
+            <div class="flex justify-end gap-2 pt-2" id="modal-actions"></div>
+        </div>
+    </div>
+
+    <!-- Core Script Engine -->
+    <script>
+        // 全域狀態管理
+        window.scannedList = [];
+        window.scannedSnSet = new Set();
+        
+        let html5QrCode = null;
+        let isScannerRunning = false;
+        let activeVideoTrack = null;
+        let currentZoomLevel = 1.0;
+        let isTorchOn = false;
+        let supportedCapabilities = {};
+        let availableCameras = [];
+        let selectedCameraId = null;
+
+        // 原生音訊反饋
+        function playBeep(freq, type, duration) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function playFeedback(type) {
+            try {
+                if (type === 'success') {
+                    playBeep(920, 'sine', 0.08);
+                    setTimeout(() => playBeep(1400, 'sine', 0.09), 85);
+                    if (navigator.vibrate) navigator.vibrate(45);
+                } else if (type === 'duplicate') {
+                    playBeep(260, 'sawtooth', 0.2);
+                    setTimeout(() => playBeep(220, 'sawtooth', 0.22), 160);
+                    if (navigator.vibrate) navigator.vibrate([100, 60, 120]);
+                }
+            } catch (err) {}
+        }
+
+        // 品名庫
+        const BASE_CONFIRMED_CATALOG = {
+            "71020": "Redmi Pad 2 Pro"
+        };
+        let productCatalog = { ...BASE_CONFIRMED_CATALOG };
+        try {
+            const savedCatalog = localStorage.getItem('mi_product_catalog_clean');
+            if (savedCatalog) productCatalog = JSON.parse(savedCatalog);
+        } catch (e) {}
+
+        window.getProductName = function(code) {
+            if (!code) return '';
+            return productCatalog[code] || '';
+        };
+
+        // 批次管理
+        let currentRoomId = 'default';
+        try {
+            currentRoomId = localStorage.getItem('mi_inventory_last_room') || 'default';
+        } catch(e) {}
+
+        window.__batchManager = {
+            getRoomId: () => currentRoomId,
+            setRoom: (newRoom) => {
+                currentRoomId = newRoom.trim() || 'default';
+                const roomLbl = document.getElementById('current-room-label');
+                if (roomLbl) roomLbl.textContent = currentRoomId;
+                try {
+                    localStorage.setItem('mi_inventory_last_room', currentRoomId);
+                } catch(e) {}
+                loadRoomData();
+            }
+        };
+
+        const LOCAL_STORAGE_KEY_PREFIX = 'mi_inventory_cache_';
+        function saveLocalFailSafe(roomId, list) {
+            try {
+                localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${roomId}`, JSON.stringify(list));
+                localStorage.setItem('mi_inventory_last_room', roomId);
+                updateSaveIndicator();
+            } catch (e) {}
+        }
+
+        function loadLocalFailSafe(roomId) {
+            try {
+                const raw = localStorage.getItem(`${LOCAL_STORAGE_KEY_PREFIX}${roomId}`);
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+            return [];
+        }
+
+        function updateSaveIndicator() {
+            const ind = document.getElementById('cloud-save-indicator');
+            if (!ind) return;
+            const nowTime = new Date().toLocaleTimeString('zh-TW', { hour12: false, hour: '2-digit', minute: '2-digit' });
+            ind.innerHTML = `<i class="ph-bold ph-shield-check text-xs"></i> 本機已自動儲存 (${nowTime})`;
+        }
+
+        // ==========================================
+        // 核心：全相容字串淨化器（徹底擊碎全形/注音/特殊符號）
+        // ==========================================
+        const BOPOMOFO_MAP = {
+            'ㄅ': '1', 'ㄉ': '2', 'ˇ': '3', 'ˋ': '4', 'ㄓ': '5', 'ˊ': '6', '˙': '7', 'ㄚ': '8', 'ㄞ': '9', 'ㄢ': '0', 'ㄦ': '-',
+            'ㄆ': 'q', 'ㄊ': 'w', 'ㄍ': 'e', 'ㄐ': 'r', 'ㄔ': 't', 'ㄗ': 'y', 'ㄧ': 'u', 'ㄛ': 'i', 'ㄟ': 'o', 'ㄣ': 'p',
+            'ㄇ': 'a', 'ㄋ': 's', 'ㄎ': 'd', 'ㄌ': 'f', 'ㄏ': 'g', 'ㄜ': 'k', 'ㄠ': 'l', 'ㄤ': ';',
+            'ㄈ': 'z', 'ㄒ': 'x', 'ㄖ': 'v', 'ㄝ': ',', 'ㄡ': '.', 'ㄥ': '/'
+        };
+
+        function cleanBarcodeString(raw) {
+            if (!raw) return '';
+            let s = String(raw).trim();
+            // 移除不可見字元與換行
+            s = s.replace(/[\x00-\x1F\x7F\u200B-\u200D\uFEFF]/g, '');
+            // 全形轉半形（涵蓋全形數字、字母與全形斜線 \uFF0F）
+            s = s.replace(/[\uFF01-\uFF5E]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+            s = s.replace(/\u3000/g, ' ');
+            // 統一所有可能斜線符號
+            s = s.replace(/[\/\uFF0F\u2044\u2215\\]/g, '/');
+
+            // 注音輸入法還原
+            let converted = '';
+            let hadBopomofo = false;
+            for (let i = 0; i < s.length; i++) {
+                const ch = s[i];
+                if (BOPOMOFO_MAP[ch]) {
+                    converted += BOPOMOFO_MAP[ch];
+                    hadBopomofo = true;
+                } else {
+                    converted += ch;
+                }
+            }
+            if (hadBopomofo) s = converted;
+
+            // 移除常見前綴 SN:
+            s = s.replace(/^S\/?N\s*[:：\-]?\s*/i, '');
+            return s.trim().toUpperCase();
+        }
+
+        // ==========================================
+        // 核心：嚴格 5 碼條碼提取器
+        // ==========================================
+        function parseBarcodeData(rawText) {
+            const clean = cleanBarcodeString(rawText);
+            if (!clean) return null;
+
+            // 攔截外箱包材碼 18504
+            if (clean.includes('18504/')) {
+                return { isValidSn: false, reason: '外箱紙盒標籤碼 (18504)，已自動略過', raw: clean };
+            }
+
+            // 嚴格比對：5 碼數字 + 斜線 / + 至少 3 碼以上序號
+            const match = clean.match(/(?:^|[^0-9])(\d{5})\/([A-Za-z0-9_-]{3,})(?:$|[^A-Za-z0-9_-])/);
+            if (match) {
+                const code = match[1];
+                const serial = match[2];
+                if (code === '18504') {
+                    return { isValidSn: false, reason: '外箱紙盒標籤碼 (18504)，已自動略過', raw: clean };
+                }
+                return {
+                    isValidSn: true,
+                    code: code,
+                    fullSn: `${code}/${serial}`,
+                    uniquePart: serial
+                };
+            }
+
+            return { isValidSn: false, reason: '非標準 5 碼 SN 格式', raw: clean };
+        }
+
+        // ==========================================
+        // 唯一錄入引擎（Single Pipeline Ingest）
+        // ==========================================
+        let isProcessing = false;
+
+        function updateLiveDiagnostic(msg, isSuccess = true) {
+            const txt = document.getElementById('diagnostic-text');
+            const dot = document.querySelector('#live-diagnostic-bar span');
+            if (txt) txt.textContent = msg;
+            if (dot) {
+                dot.className = isSuccess 
+                    ? 'inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse' 
+                    : 'inline-block w-2 h-2 rounded-full bg-amber-500 animate-ping';
+            }
+        }
+
+        function executeIngestion(rawVal, source = 'gun') {
+            if (!rawVal) return false;
+            const parsed = parseBarcodeData(rawVal);
+
+            if (!parsed || !parsed.isValidSn) {
+                updateLiveDiagnostic(`略過無效碼: ${rawVal.slice(0, 15)}...`, false);
+                return false;
+            }
+
+            const fullSn = parsed.fullSn;
+            const code = parsed.code;
+            const pName = window.getProductName(code);
+
+            // 清空輸入框並閃爍綠色動畫
+            const inp = document.getElementById('manual-sn-input');
+            if (inp) {
+                inp.value = '';
+                inp.classList.add('flash-ok');
+                setTimeout(() => inp.classList.remove('flash-ok'), 350);
+            }
+
+            // 防重刷比對
+            if (window.scannedSnSet.has(fullSn)) {
+                playFeedback('duplicate');
+                const existing = window.scannedList.find(it => it.sn === fullSn);
+                const ownerTime = existing ? existing.time : '剛剛';
+                showToast(`⚠️ 重複刷入！序號已於 ${ownerTime} 掃過`, 'duplicate');
+                renderLatestCard(code, fullSn, 'duplicate', ownerTime, 1, pName);
+                updateLiveDiagnostic(`⚠️ 重複序號: ${fullSn}`, false);
+                return false;
+            }
+
+            // 成功錄入
+            playFeedback('success');
+            const nowTime = new Date().toLocaleTimeString('zh-TW', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const now = Date.now();
+
+            const newRecord = {
+                sn: fullSn,
+                displaySn: fullSn,
+                code: code,
+                time: nowTime,
+                timestamp: now,
+                roomId: window.__batchManager.getRoomId()
+            };
+
+            window.scannedSnSet.add(fullSn);
+            window.scannedList.unshift(newRecord);
+
+            const countForCode = window.scannedList.filter(item => item.code === code).length;
+            const nameMsg = pName ? ` (${pName})` : '';
+            showToast(`✅ [${code}]${nameMsg} 已累計 ${countForCode} 件`, 'success');
+            renderLatestCard(code, newRecord.displaySn, 'success', nowTime, countForCode, pName);
+            updateLiveDiagnostic(`✅ 成功錄入: ${fullSn} (累計 ${countForCode} 件)`, true);
+
+            updateStats();
+            renderSummaryList();
+            renderHistoryList();
+            saveLocalFailSafe(window.__batchManager.getRoomId(), window.scannedList);
+
+            return true;
+        }
+
+        // ==========================================
+        // 條碼槍輸入事件監聽器（防抖 80ms 自動吞入）
+        // ==========================================
+        let inputDebounceTimer = null;
+
+        function handleGunInput(inputEl) {
+            const raw = inputEl.value;
+            if (inputDebounceTimer) clearTimeout(inputDebounceTimer);
+
+            // 若已有斜線且長度超過 7 碼，80 毫秒極速吞入
+            if (raw.length >= 7 && (raw.includes('/') || raw.includes('／') || raw.includes('\\'))) {
+                updateLiveDiagnostic(`⚡ 正在錄入: ${raw}...`, true);
+                inputDebounceTimer = setTimeout(() => {
+                    executeIngestion(inputEl.value, 'gun-input');
+                }, 80);
+            }
+        }
+
+        function handleGunKeyDown(e) {
+            if (e.key === 'Enter' || e.key === 'Tab' || e.keyCode === 13) {
+                e.preventDefault();
+                if (inputDebounceTimer) clearTimeout(inputDebounceTimer);
+                handleManualSubmit();
+            }
+        }
+
+        function handleGunPaste(e) {
+            if (inputDebounceTimer) clearTimeout(inputDebounceTimer);
+            setTimeout(() => {
+                const inp = document.getElementById('manual-sn-input');
+                if (inp && inp.value) {
+                    executeIngestion(inp.value, 'gun-paste');
+                }
+            }, 30);
+        }
+
+        function handleManualSubmit() {
+            const inp = document.getElementById('manual-sn-input');
+            if (!inp) return;
+            const val = inp.value.trim();
+            if (!val) return;
+            executeIngestion(val, 'manual-submit');
+            inp.value = '';
+            inp.focus();
+        }
+
+        // 主動哨兵（每 100ms 巡檢一次，保證絕不卡字）
+        setInterval(() => {
+            const inp = document.getElementById('manual-sn-input');
+            if (!inp) return;
+            const val = inp.value.trim();
+            if (val.length >= 7 && (val.includes('/') || val.includes('／') || val.includes('\\'))) {
+                const parsed = parseBarcodeData(val);
+                if (parsed && parsed.isValidSn) {
+                    executeIngestion(val, 'sentinel');
+                }
+            }
+        }, 100);
+
+        // 全域鍵盤監聽（當游標不在輸入框時依然能夠自動錄入）
+        let globalBuffer = '';
+        let globalLastTime = 0;
+        let globalTimer = null;
+
+        window.addEventListener('keydown', (e) => {
+            const activeId = document.activeElement ? document.activeElement.id : '';
+            if (activeId === 'summary-search-input' || activeId === 'room-id-input' || 
+                activeId === 'catalog-paste-area' || activeId === 'catalog-search-input' || 
+                activeId === 'quick-name-input') {
+                return;
+            }
+
+            const now = Date.now();
+            if (now - globalLastTime > 150) globalBuffer = '';
+            globalLastTime = now;
+
+            const char = e.key;
+            if (char === 'Enter' || char === 'Tab' || e.keyCode === 13) {
+                if (globalTimer) clearTimeout(globalTimer);
+                if (globalBuffer.length >= 7) {
+                    e.preventDefault();
+                    executeIngestion(globalBuffer, 'global-key');
+                    globalBuffer = '';
+                    const inp = document.getElementById('manual-sn-input');
+                    if (inp) inp.value = '';
+                }
+            } else if (char && char.length === 1) {
+                globalBuffer += char;
+                if (globalTimer) clearTimeout(globalTimer);
+                globalTimer = setTimeout(() => {
+                    if (globalBuffer.length >= 7) {
+                        executeIngestion(globalBuffer, 'global-timeout');
+                        globalBuffer = '';
+                        const inp = document.getElementById('manual-sn-input');
+                        if (inp) inp.value = '';
+                    }
+                }, 100);
+            }
+        });
+
+        // 相機模組
+        async function userTriggerStartScanner() {
+            const overlay = document.getElementById('camera-loading-overlay');
+            const scanGuide = document.getElementById('scanner-overlay');
+            const statusDot = document.getElementById('camera-status-dot');
+            const statusText = document.getElementById('camera-status-text');
+
+            if (statusText) statusText.textContent = "喚醒鏡頭中...";
+            if (statusDot) statusDot.className = "inline-flex h-2.5 w-2.5 rounded-full bg-amber-500 animate-ping";
+
+            if (typeof Html5Qrcode === 'undefined') {
+                showToast("相機模組載入中，請稍候重試...", "warning");
+                return;
+            }
+
+            try {
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader", { verbose: false });
+                }
+
+                if (isScannerRunning) {
+                    try { await html5QrCode.stop(); } catch (e) {}
+                    isScannerRunning = false;
+                }
+
+                const qrConfig = {
+                    fps: 25,
+                    qrbox: (viewfinderWidth, viewfinderHeight) => {
+                        const width = Math.floor(Math.min(viewfinderWidth * 0.90, 340));
+                        const height = Math.floor(Math.min(viewfinderHeight * 0.45, 120));
+                        return { width, height };
+                    }
+                };
+
+                let started = false;
+                let lastError = null;
+
+                try {
+                    await html5QrCode.start(
+                        { facingMode: "environment" },
+                        qrConfig,
+                        (decodedText) => executeIngestion(decodedText, 'camera'),
+                        () => {}
+                    );
+                    started = true;
+                } catch (errFacing) {
+                    lastError = errFacing;
+                }
+
+                if (!started) {
+                    try {
+                        const cameras = await Html5Qrcode.getCameras();
+                        if (cameras && cameras.length > 0) {
+                            availableCameras = cameras;
+                            populateCameraSelect(cameras);
+                            const backCam = cameras.find(c => /back|rear|environment|後/i.test(c.label)) || cameras[cameras.length - 1];
+                            await html5QrCode.start(
+                                backCam.id,
+                                qrConfig,
+                                (decodedText) => executeIngestion(decodedText, 'camera'),
+                                () => {}
+                            );
+                            started = true;
+                        }
+                    } catch (errGetCams) {
+                        lastError = errGetCams;
+                    }
+                }
+
+                if (started) {
+                    isScannerRunning = true;
+                    if (overlay) overlay.classList.add('hidden');
+                    if (scanGuide) scanGuide.classList.remove('hidden');
+                    if (statusDot) statusDot.className = "inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse";
+                    if (statusText) statusText.textContent = "自動掃描中";
+                    setTimeout(setupAdvancedTrackControls, 300);
+                    showToast("相機已就緒！對準 5碼/序號 立即錄入", "success");
+                } else {
+                    throw lastError || new Error("無法存取相機鏡頭");
+                }
+
+            } catch (err) {
+                console.error("相機啟動錯誤:", err);
+                if (statusDot) statusDot.className = "inline-flex h-2.5 w-2.5 rounded-full bg-rose-500";
+                if (statusText) statusText.textContent = "相機啟動受阻";
+                if (overlay) overlay.classList.remove('hidden');
+
+                let friendlyMsg = "無法啟動手機鏡頭。";
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    friendlyMsg = "相機權限已被拒絕！\n請點擊網址列旁的「🔒」或「設定」圖示，將「相機」設為「允許」，然後重新整理網頁。";
+                } else {
+                    friendlyMsg = "請確認沒有其他 App 佔用鏡頭後再試一次。";
+                }
+                showModal("相機啟動提示", friendlyMsg);
+            }
+        }
+
+        function populateCameraSelect(cameras) {
+            const cameraSelect = document.getElementById('camera-select');
+            if (cameraSelect && cameras.length > 0) {
+                cameraSelect.innerHTML = '';
+                cameras.forEach((cam, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = cam.id;
+                    const isBack = /back|rear|environment|後/i.test(cam.label);
+                    opt.textContent = cam.label || (isBack ? `後鏡頭 ${idx+1}` : `鏡頭 ${idx+1}`);
+                    cameraSelect.appendChild(opt);
+                });
+                cameraSelect.classList.remove('hidden');
+            }
+        }
+
+        async function switchCameraManually(cameraId) {
+            if (!cameraId) return;
+            selectedCameraId = cameraId;
+            if (isScannerRunning && html5QrCode) {
+                try { await html5QrCode.stop(); } catch (e) {}
+                isScannerRunning = false;
+            }
+            userTriggerStartScanner();
+        }
+
+        function setupAdvancedTrackControls() {
+            try {
+                const videoEl = document.querySelector("#reader video");
+                if (!videoEl || !videoEl.srcObject) return;
+                const track = videoEl.srcObject.getVideoTracks()[0];
+                if (!track) return;
+                activeVideoTrack = track;
+                supportedCapabilities = track.getCapabilities ? track.getCapabilities() : {};
+
+                if (supportedCapabilities.focusMode && supportedCapabilities.focusMode.includes('continuous')) {
+                    track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
+                }
+                const torchBtn = document.getElementById('torch-btn');
+                if (supportedCapabilities.torch) torchBtn.classList.remove('hidden');
+                const zoomBtn = document.getElementById('zoom-btn');
+                if (supportedCapabilities.zoom) zoomBtn.classList.remove('hidden');
+            } catch (err) {}
+        }
+
+        async function cycleZoom() {
+            if (!activeVideoTrack || !supportedCapabilities.zoom) return;
+            const maxZoom = supportedCapabilities.zoom.max || 2.0;
+            const minZoom = supportedCapabilities.zoom.min || 1.0;
+
+            if (currentZoomLevel === 1.0 && maxZoom >= 1.5) {
+                currentZoomLevel = 1.5;
+            } else if (currentZoomLevel === 1.5 && maxZoom >= 2.0) {
+                currentZoomLevel = 2.0;
+            } else {
+                currentZoomLevel = minZoom;
+            }
+
+            try {
+                await activeVideoTrack.applyConstraints({ advanced: [{ zoom: currentZoomLevel }] });
+                document.getElementById('zoom-label').textContent = `${currentZoomLevel.toFixed(1)}x`;
+                showToast(`變焦：${currentZoomLevel.toFixed(1)}x`, "info");
+            } catch (e) {}
+        }
+
+        async function toggleTorch() {
+            if (!activeVideoTrack || !supportedCapabilities.torch) {
+                showToast("此手機目前不支援瀏覽器開燈", "warning");
+                return;
+            }
+            try {
+                isTorchOn = !isTorchOn;
+                await activeVideoTrack.applyConstraints({ advanced: [{ torch: isTorchOn }] });
+                const torchBtn = document.getElementById('torch-btn');
+                const torchLabel = document.getElementById('torch-label');
+                if (isTorchOn) {
+                    torchBtn.classList.add('bg-amber-400', 'text-slate-950');
+                    torchBtn.classList.remove('bg-slate-100', 'text-slate-700');
+                    torchLabel.textContent = "已補光";
+                } else {
+                    torchBtn.classList.remove('bg-amber-400', 'text-slate-950');
+                    torchBtn.classList.add('bg-slate-100', 'text-slate-700');
+                    torchLabel.textContent = "補光";
+                }
+            } catch (e) {
+                showToast("無法切換補光燈", "warning");
+            }
+        }
+
+        async function triggerManualRefocus() {
+            if (!activeVideoTrack) return;
+            try {
+                if (supportedCapabilities.focusMode) {
+                    await activeVideoTrack.applyConstraints({ advanced: [{ focusMode: "single-shot" }] }).catch(() => {});
+                    setTimeout(async () => {
+                        await activeVideoTrack.applyConstraints({ advanced: [{ focusMode: "continuous" }] }).catch(() => {});
+                    }, 120);
+                }
+                showToast("🔍 對焦中...", "info");
+            } catch (e) {}
+        }
+
+        async function restartCameraManual() {
+            if (html5QrCode && isScannerRunning) {
+                try { await html5QrCode.stop(); } catch (e) {}
+                isScannerRunning = false;
+            }
+            userTriggerStartScanner();
+        }
+
+        async function handleFileScan(inputEl) {
+            if (!inputEl.files || inputEl.files.length === 0) return;
+            const file = inputEl.files[0];
+            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader", { verbose: false });
+            showToast("正在解析相片條碼...", "info");
+            try {
+                const decodedText = await html5QrCode.scanFile(file, true);
+                executeIngestion(decodedText, 'file');
+            } catch (err) {
+                showToast("未能辨識出有效條碼，請確認條碼清晰度", "error");
+            }
+            inputEl.value = '';
+        }
+
+        function renderLatestCard(code, sn, status, scanTime = '', currentModelTotal = 1, productName = '') {
+            const container = document.getElementById('latest-scan-content');
+            const timeEl = document.getElementById('latest-scan-time');
+            if (timeEl) timeEl.textContent = scanTime || new Date().toLocaleTimeString();
+
+            const pName = productName || window.getProductName(code);
+            const nameBadge = pName ? `<div class="text-xs font-bold text-slate-900 mt-1 flex items-center gap-1"><i class="ph-bold ph-package text-brand-600"></i> ${pName}</div>` : '';
+
+            if (status === 'duplicate') {
+                container.innerHTML = `
+                    <div class="p-3.5 rounded-xl border border-rose-400 bg-rose-50/70 text-left animate-pulse">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="font-mono text-base font-black px-2.5 py-0.5 bg-rose-600 text-white rounded-lg">${code}</span>
+                            <span class="bg-rose-100 text-rose-700 font-black text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
+                                <i class="ph-bold ph-warning-octagon text-sm"></i> 重複條碼 (未累計)
+                            </span>
+                        </div>
+                        ${nameBadge}
+                        <div class="text-[11px] font-mono text-rose-800 bg-white/90 p-2 rounded-lg border border-rose-200 break-all select-all mt-1">
+                            SN: ${sn}
+                        </div>
+                        <p class="text-xs text-rose-700 font-semibold mt-2">
+                            ⚠ 此件序號已在 ${scanTime} 刷過，系統已阻擋多算！
+                        </p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="p-3.5 rounded-xl border border-emerald-400 bg-emerald-50/30 text-left">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono text-base font-black px-2.5 py-0.5 bg-slate-900 text-white rounded-lg">${code}</span>
+                                <span class="text-xs font-bold text-slate-700">錄入成功</span>
+                            </div>
+                            <span class="bg-emerald-100 text-emerald-800 font-bold text-xs px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                <i class="ph-bold ph-check"></i> 刷入成功
+                            </span>
+                        </div>
+                        ${nameBadge}
+                        <div class="text-[11px] font-mono text-slate-600 bg-white p-2 rounded-lg border border-slate-200 break-all select-all mt-1">
+                            SN: ${sn}
+                        </div>
+                        <div class="mt-2 text-xs text-slate-600 flex justify-between items-center">
+                            <span>此型號累計: <strong class="text-brand-600 text-sm font-black">${currentModelTotal}</strong> 件</span>
+                            <span class="text-[11px] text-slate-400">總計: ${window.scannedList.length} 件</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateStats() {
+            const total = window.scannedList.length;
+            const totalEl = document.getElementById('stat-total-scanned');
+            if (totalEl) totalEl.textContent = total;
+            
+            const uniqueModels = new Set(window.scannedList.map(item => item.code));
+            const modelEl = document.getElementById('stat-model-count');
+            if (modelEl) modelEl.textContent = uniqueModels.size;
+            
+            const badgeEl = document.getElementById('history-count-badge');
+            if (badgeEl) badgeEl.textContent = `${total} 筆`;
+        }
+
+        function renderSummaryList() {
+            const container = document.getElementById('summary-list-container');
+            if (!container) return;
+            const query = (document.getElementById('summary-search-input')?.value || '').trim().toLowerCase();
+
+            const modelMap = {};
+            window.scannedList.forEach(item => {
+                if (!modelMap[item.code]) modelMap[item.code] = [];
+                modelMap[item.code].push(item);
+            });
+
+            const codes = Object.keys(modelMap).sort();
+            const filteredCodes = codes.filter(c => {
+                const pName = window.getProductName(c).toLowerCase();
+                return c.toLowerCase().includes(query) || pName.includes(query);
+            });
+
+            if (filteredCodes.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl p-8 text-center text-slate-400 border border-slate-200">
+                        <i class="ph-thin ph-tray text-4xl mb-1 block"></i>
+                        <p class="text-xs">尚無刷入資料或找不到符合型號</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredCodes.forEach(code => {
+                const items = modelMap[code];
+                const count = items.length;
+                const pName = window.getProductName(code);
+
+                const titleMarkup = pName
+                    ? `<div class="flex items-center gap-1.5 flex-wrap">
+                           <span class="text-xs sm:text-sm font-bold text-slate-900 leading-snug">${pName}</span>
+                           <button onclick="event.stopPropagation(); openQuickNameModal('${code}')" class="text-slate-400 hover:text-brand-600 p-0.5" title="修改品名">
+                               <i class="ph-bold ph-pencil-simple text-xs"></i>
+                           </button>
+                       </div>`
+                    : `<div class="flex items-center gap-1.5 flex-wrap">
+                           <span class="text-xs font-bold text-slate-700">型號 ${code}</span>
+                           <button onclick="event.stopPropagation(); openQuickNameModal('${code}')" class="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 rounded-lg text-[10px] font-bold flex items-center gap-1 transition active:scale-95" title="設定此型號品名">
+                               <i class="ph-bold ph-plus-circle"></i> 設定品名
+                           </button>
+                       </div>`;
+
+                html += `
+                    <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleModelDetail('${code}')">
+                            <div class="flex items-center gap-3 overflow-hidden mr-2">
+                                <span class="font-mono text-sm sm:text-base font-black px-2.5 py-1 bg-slate-900 text-white rounded-xl shadow-sm flex-shrink-0">
+                                    ${code}
+                                </span>
+                                <div class="overflow-hidden">
+                                    ${titleMarkup}
+                                    <div class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                                        <span>5碼型號 ${code}</span>
+                                        <span>·</span>
+                                        <span>已錄入 ${count} 件獨立序號</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <span class="text-lg font-black text-brand-600">${count} <span class="text-xs font-normal text-slate-500">件</span></span>
+                                <i id="chevron-${code}" class="ph-bold ph-caret-down text-slate-400 transition-transform duration-200"></i>
+                            </div>
+                        </div>
+
+                        <div id="detail-${code}" class="hidden mt-3 pt-3 border-t border-slate-100 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-semibold text-slate-500">已刷入序號明細：</span>
+                                <button onclick="deleteEntireModel('${code}')" class="px-2 py-0.5 text-[10px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg flex items-center gap-1 transition">
+                                    <i class="ph-bold ph-trash"></i> 刪除此型號全部 (${count}件)
+                                </button>
+                            </div>
+                            <div class="max-h-48 overflow-y-auto space-y-1.5 pr-1 font-mono text-[11px]">
+                                ${items.map((it, idx) => `
+                                    <div class="p-1.5 bg-slate-50 rounded-lg flex items-center justify-between text-slate-600 border border-slate-100 hover:bg-slate-100/70 transition">
+                                        <div class="truncate mr-2 flex items-center gap-1.5">
+                                            <span class="text-slate-400">#${count - idx}</span>
+                                            <span class="text-slate-800 font-bold truncate">${it.displaySn || it.sn}</span>
+                                        </div>
+                                        <div class="text-[10px] text-slate-400 whitespace-nowrap flex items-center gap-2">
+                                            <span>${it.time}</span>
+                                            <button onclick="deleteSingleScanItem('${it.sn}')" class="text-rose-500 hover:text-rose-700 p-1 text-xs" title="刪除此筆序號">
+                                                <i class="ph-bold ph-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        let currentEditingModelCode = '';
+        function openQuickNameModal(code) {
+            currentEditingModelCode = code;
+            const badge = document.getElementById('quick-name-code-badge');
+            const input = document.getElementById('quick-name-input');
+            const modal = document.getElementById('quick-name-modal');
+            if (badge) badge.textContent = code;
+            if (input) {
+                input.value = window.getProductName(code) || '';
+                setTimeout(() => input.focus(), 150);
+            }
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeQuickNameModal() {
+            const modal = document.getElementById('quick-name-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function saveQuickNameSubmit() {
+            const input = document.getElementById('quick-name-input');
+            if (!input || !currentEditingModelCode) return;
+            const newName = input.value.trim();
+            if (newName) {
+                productCatalog[currentEditingModelCode] = newName;
+                persistCatalog();
+                renderSummaryList();
+                renderHistoryList();
+                showToast(`已設定型號 [${currentEditingModelCode}] 品名：${newName}`, 'success');
+            }
+            closeQuickNameModal();
+        }
+
+        function toggleModelDetail(code) {
+            const detailEl = document.getElementById(`detail-${code}`);
+            const chevronEl = document.getElementById(`chevron-${code}`);
+            if (detailEl) {
+                detailEl.classList.toggle('hidden');
+                if (chevronEl) chevronEl.classList.toggle('rotate-180');
+            }
+        }
+
+        function deleteSingleScanItem(sn) {
+            showModal(
+                "確認刪除此序號？",
+                `即將刪除：\n${sn}\n\n刪除後此件商品將自統計中扣除，並允許重新刷入。`,
+                [
+                    { text: "取消", class: "bg-slate-100 text-slate-700" },
+                    { text: "確認刪除", class: "bg-rose-600 text-white font-bold", onClick: () => {
+                        window.scannedList = window.scannedList.filter(it => it.sn !== sn);
+                        window.scannedSnSet.delete(sn);
+                        updateStats();
+                        renderSummaryList();
+                        renderHistoryList();
+                        saveLocalFailSafe(window.__batchManager.getRoomId(), window.scannedList);
+                        showToast(`已刪除序號`, "info");
+                    }}
+                ]
+            );
+        }
+
+        function deleteEntireModel(code) {
+            const count = window.scannedList.filter(it => it.code === code).length;
+            showModal(
+                `確認刪除型號 [${code}] 全部資料？`,
+                `將一併移除該型號旗下的全部 ${count} 筆刷入紀錄！`,
+                [
+                    { text: "取消", class: "bg-slate-100 text-slate-700" },
+                    { text: "確認刪除全部", class: "bg-rose-600 text-white font-bold", onClick: () => {
+                        const remaining = window.scannedList.filter(it => it.code !== code);
+                        window.scannedList = remaining;
+                        window.scannedSnSet = new Set(remaining.map(it => it.sn));
+                        updateStats();
+                        renderSummaryList();
+                        renderHistoryList();
+                        saveLocalFailSafe(window.__batchManager.getRoomId(), window.scannedList);
+                        showToast(`已全數刪除型號 [${code}] 的 ${count} 筆資料`, "info");
+                    }}
+                ]
+            );
+        }
+
+        function renderHistoryList() {
+            const container = document.getElementById('history-list-container');
+            if (!container) return;
+            if (window.scannedList.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl p-8 text-center text-slate-400 border border-slate-200">
+                        <p class="text-xs">尚無刷入紀錄</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = window.scannedList.map((item, idx) => {
+                const pName = window.getProductName(item.code);
+                const nameDisp = pName ? `<span class="text-[10px] text-slate-500 font-normal">(${pName})</span>` : '';
+                return `
+                    <div class="bg-white rounded-xl p-3 shadow-sm border border-slate-200 flex items-center justify-between">
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <span class="font-mono text-xs font-bold px-2 py-0.5 bg-slate-100 text-slate-800 rounded-md">
+                                ${item.code}
+                            </span>
+                            <div class="truncate">
+                                <div class="font-mono text-xs text-slate-800 font-bold truncate select-all">
+                                    ${item.displaySn || item.sn} ${nameDisp}
+                                </div>
+                                <div class="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                    <span>${item.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                                第 ${window.scannedList.length - idx} 件
+                            </span>
+                            <button onclick="deleteSingleScanItem('${item.sn}')" class="text-slate-400 hover:text-rose-600 p-1 text-xs" title="刪除此紀錄">
+                                <i class="ph-bold ph-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function switchTab(tabId) {
+            const tabs = ['scan', 'summary', 'history'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`nav-${t}-btn`);
+                if (t === tabId) {
+                    el?.classList.remove('hidden');
+                    btn?.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+                    btn?.classList.remove('text-slate-600');
+                } else {
+                    el?.classList.add('hidden');
+                    btn?.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+                    btn?.classList.add('text-slate-600');
+                }
+            });
+        }
+
+        function openExportModal() {
+            const modal = document.getElementById('export-modal');
+            const countEl = document.getElementById('export-modal-count');
+            const modelsEl = document.getElementById('export-modal-models');
+            const batchNameEl = document.getElementById('export-modal-batch-name');
+            
+            const currentRoom = window.__batchManager.getRoomId();
+            if (batchNameEl) batchNameEl.textContent = currentRoom;
+            if (countEl) countEl.textContent = window.scannedList.length;
+            
+            const uniqueModels = new Set(window.scannedList.map(it => it.code));
+            if (modelsEl) modelsEl.textContent = uniqueModels.size;
+
+            hideExportStatus();
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeExportModal() {
+            const modal = document.getElementById('export-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function setExportStatus(msg, type = 'success') {
+            const el = document.getElementById('export-modal-status');
+            if (!el) return;
+            el.className = `p-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition ${
+                type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                type === 'warning' ? 'bg-amber-50 text-amber-800 border border-amber-200' :
+                'bg-rose-50 text-rose-800 border border-rose-200'
+            }`;
+            el.innerHTML = `<i class="ph-bold ${type === 'success' ? 'ph-check-circle' : 'ph-warning'} text-sm flex-shrink-0"></i> <span>${msg}</span>`;
+            el.classList.remove('hidden');
+        }
+
+        function hideExportStatus() {
+            const el = document.getElementById('export-modal-status');
+            if (el) el.classList.add('hidden');
+        }
+
+        async function copyTextCrossPlatform(text) {
+            let success = false;
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            ta.setSelectionRange(0, 999999);
+            try {
+                success = document.execCommand('copy');
+            } catch (e) {}
+            document.body.removeChild(ta);
+            return success;
+        }
+
+        async function exportExcelSpreadsheet() {
+            setExportStatus("正在準備 Excel 試算表檔案...", "warning");
+            if (!window.XLSX) {
+                downloadCsvSpreadsheetDirect();
+                return;
+            }
+
+            try {
+                const listToExport = window.scannedList.length > 0 ? window.scannedList : [
+                    { code: "71020", sn: "71020/範例序號", displaySn: "71020/範例序號", time: new Date().toLocaleTimeString() }
+                ];
+
+                const modelMap = {};
+                listToExport.forEach(item => {
+                    modelMap[item.code] = (modelMap[item.code] || 0) + 1;
+                });
+
+                const summaryData = [
+                    ["門市進貨 5 碼型號統計匯總表"],
+                    [`批次房號：${window.__batchManager.getRoomId()}`, `總件數：${listToExport.length} 件`, `產生時間：${new Date().toLocaleString()}`],
+                    [],
+                    ["商品型號 (5碼)", "商品品名", "實收數量 (件)"]
+                ];
+
+                const sortedCodes = Object.keys(modelMap).sort();
+                sortedCodes.forEach(code => {
+                    const pName = window.getProductName(code) || "";
+                    summaryData.push([code, pName, modelMap[code]]);
+                });
+
+                const detailsData = [
+                    ["項次", "商品型號(5碼)", "商品品名", "完整 SN 條碼", "刷入時間"]
+                ];
+
+                listToExport.forEach((it, idx) => {
+                    const pName = window.getProductName(it.code) || "";
+                    detailsData.push([
+                        listToExport.length - idx,
+                        it.code,
+                        pName,
+                        it.displaySn || it.sn,
+                        it.time
+                    ]);
+                });
+
+                const wb = XLSX.utils.book_new();
+                const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+                const wsDetails = XLSX.utils.aoa_to_sheet(detailsData);
+
+                wsSummary['!cols'] = [{ wch: 16 }, { wch: 38 }, { wch: 14 }];
+                wsDetails['!cols'] = [{ wch: 8 }, { wch: 14 }, { wch: 32 }, { wch: 28 }, { wch: 18 }];
+
+                XLSX.utils.book_append_sheet(wb, wsSummary, "型號數量統計");
+                XLSX.utils.book_append_sheet(wb, wsDetails, "序號流水明細");
+
+                const dateStr = new Date().toISOString().slice(0, 10);
+                const fileName = `門市進貨_${window.__batchManager.getRoomId()}_${dateStr}.xlsx`;
+
+                XLSX.writeFile(wb, fileName);
+                setExportStatus(`🎉 已下載 Excel！檔案：${fileName}`, "success");
+                showToast(`已觸發下載 ${fileName}！`, "success");
+            } catch (err) {
+                downloadCsvSpreadsheetDirect();
+            }
+        }
+
+        function downloadCsvSpreadsheetDirect() {
+            const listToExport = window.scannedList.length > 0 ? window.scannedList : [
+                { code: "71020", sn: "71020/範例序號", displaySn: "71020/範例序號", time: new Date().toLocaleTimeString() }
+            ];
+
+            const modelMap = {};
+            listToExport.forEach(item => {
+                modelMap[item.code] = (modelMap[item.code] || 0) + 1;
+            });
+
+            let csvContent = "\uFEFF";
+            csvContent += `門市進貨 5 碼型號統計匯總表\r\n`;
+            csvContent += `批次房號,${window.__batchManager.getRoomId()},總件數,${listToExport.length},匯出時間,"${new Date().toLocaleString()}"\r\n\r\n`;
+            csvContent += "商品型號(5碼),商品品名,實收件數\r\n";
+            for (let code in modelMap) {
+                const pName = window.getProductName(code) || "";
+                csvContent += `"${code}","${pName.replace(/"/g, '""')}",${modelMap[code]}\r\n`;
+            }
+
+            csvContent += "\r\n序號,商品型號(5碼),商品品名,完整SN條碼,刷入時間\r\n";
+            listToExport.forEach((it, idx) => {
+                const pName = window.getProductName(it.code) || "";
+                csvContent += `${listToExport.length - idx},"${it.code}","${pName.replace(/"/g, '""')}","${it.displaySn || it.sn}","${it.time}"\r\n`;
+            });
+
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const fileName = `門市進貨_${window.__batchManager.getRoomId()}_${dateStr}.csv`;
+
+            try {
+                const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                const blobUrl = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = blobUrl;
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => document.body.removeChild(link), 1000);
+                setExportStatus(`🎉 已下載 CSV：${fileName}`, "success");
+                showToast(`已觸發下載 ${fileName}`, "success");
+            } catch (e) {
+                const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+                window.open(dataUri, '_blank');
+            }
+        }
+
+        async function copySummaryTextToClipboard() {
+            const list = window.scannedList.length > 0 ? window.scannedList : [
+                { code: "71020", sn: "71020/範例序號", time: new Date().toLocaleTimeString() }
+            ];
+
+            const modelMap = {};
+            list.forEach(item => {
+                modelMap[item.code] = (modelMap[item.code] || 0) + 1;
+            });
+
+            let text = `📦 【門市進貨清點統計報表】\n`;
+            text += `批次房號：${window.__batchManager.getRoomId()}\n`;
+            text += `實收總數：${list.length} 件\n`;
+            text += `產生時間：${new Date().toLocaleString()}\n`;
+            text += `--------------------------\n`;
+
+            const sortedCodes = Object.keys(modelMap).sort();
+            sortedCodes.forEach(code => {
+                const pName = window.getProductName(code);
+                const namePart = pName ? ` ${pName}` : '';
+                text += `• [${code}]${namePart}：${modelMap[code]} 件\n`;
+            });
+
+            showFallbackTextarea(text);
+            const ok = await copyTextCrossPlatform(text);
+            if (ok) {
+                setExportStatus("✅ 已複製 LINE 總表文字！可直接切換到 LINE 貼上", "success");
+                showToast("✅ 已成功複製總表！可直接貼進 LINE", "success");
+            } else {
+                setExportStatus("已展開下方文字框，請長按文字選取複製", "warning");
+            }
+        }
+
+        function showFallbackTextarea(text) {
+            const container = document.getElementById('export-text-fallback-container');
+            const textarea = document.getElementById('export-fallback-textarea');
+            if (container && textarea) {
+                textarea.value = text;
+                container.classList.remove('hidden');
+                setTimeout(() => {
+                    textarea.focus();
+                    textarea.select();
+                }, 100);
+            }
+        }
+
+        function copyFallbackTextarea() {
+            const textarea = document.getElementById('export-fallback-textarea');
+            if (textarea) {
+                textarea.focus();
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast("✅ 已複製文字！", "success");
+                    setExportStatus("✅ 已複製！可直接切換到 LINE 貼上", "success");
+                } catch(e) {}
+            }
+        }
+
+        function exportJsonBackup() {
+            const dataToExport = {
+                roomId: window.__batchManager.getRoomId(),
+                exportTime: new Date().toISOString(),
+                totalCount: window.scannedList.length,
+                records: window.scannedList
+            };
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `進貨條碼備份_${window.__batchManager.getRoomId()}.json`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => document.body.removeChild(link), 600);
+            showToast("已成功下載離線備份 JSON 檔案！", "success");
+        }
+
+        function openCatalogModal() {
+            renderCatalogListInModal();
+            document.getElementById('catalog-modal')?.classList.remove('hidden');
+        }
+
+        function closeCatalogModal() {
+            document.getElementById('catalog-modal')?.classList.add('hidden');
+        }
+
+        function renderCatalogListInModal() {
+            const listEl = document.getElementById('modal-catalog-list');
+            const countEl = document.getElementById('modal-catalog-count');
+            const query = (document.getElementById('catalog-search-input')?.value || '').trim().toLowerCase();
+            if (!listEl) return;
+
+            const keys = Object.keys(productCatalog).sort();
+            if (countEl) countEl.textContent = keys.length;
+
+            const filtered = keys.filter(k => k.toLowerCase().includes(query) || productCatalog[k].toLowerCase().includes(query));
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="p-3 text-slate-400 text-center">無已建檔品名</div>`;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(k => `
+                <div class="flex items-center justify-between p-1.5 bg-white rounded-lg border border-slate-100 hover:bg-slate-100/50 transition">
+                    <div class="truncate mr-2">
+                        <span class="font-bold text-slate-900 bg-slate-100 px-1 rounded">${k}</span>
+                        <span class="text-slate-700 ml-1.5">${productCatalog[k]}</span>
+                    </div>
+                    <button onclick="removeCatalogKey('${k}')" class="text-slate-300 hover:text-rose-500 p-1 flex-shrink-0" title="刪除此品名對照">
+                        <i class="ph-bold ph-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeCatalogKey(k) {
+            delete productCatalog[k];
+            persistCatalog();
+            renderCatalogListInModal();
+            renderSummaryList();
+            renderHistoryList();
+        }
+
+        function persistCatalog() {
+            try {
+                localStorage.setItem('mi_product_catalog_clean', JSON.stringify(productCatalog));
+            } catch (e) {}
+        }
+
+        function clearEntireCatalogConfirm() {
+            showModal("清空品名庫？", "將清空所有已記憶的品名對照表，方便您重新匯入最新的清單。", [
+                { text: "取消", class: "bg-slate-100 text-slate-700" },
+                { text: "確認清空", class: "bg-rose-600 text-white font-bold", onClick: () => {
+                    productCatalog = {};
+                    persistCatalog();
+                    renderCatalogListInModal();
+                    renderSummaryList();
+                    renderHistoryList();
+                    showToast("已清空品名庫", "info");
+                }}
+            ]);
+        }
+
+        function savePastedCatalog() {
+            const text = document.getElementById('catalog-paste-area')?.value || '';
+            if (!text.trim()) return;
+
+            let added = 0;
+            const lines = text.split(/\r?\n/);
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+                const match = trimmed.match(/^(\d{5}(?:\/[A-Za-z0-9_-]+)?)[,\s\t]+(.+)$/);
+                if (match) {
+                    const key = match[1].split('/')[0].trim();
+                    const name = match[2].trim();
+                    if (key && key.length === 5 && name) {
+                        productCatalog[key] = name;
+                        added++;
+                    }
+                }
+            });
+
+            if (added > 0) {
+                persistCatalog();
+                renderCatalogListInModal();
+                renderSummaryList();
+                renderHistoryList();
+                document.getElementById('catalog-paste-area').value = '';
+                showToast(`成功新增 ${added} 款商品品名！`, "success");
+            } else {
+                showToast("未辨識出有效格式（請輸入：5碼代碼 品名）", "warning");
+            }
+        }
+
+        async function handleExcelCatalogUpload(inputEl) {
+            if (!inputEl.files || inputEl.files.length === 0) return;
+            const file = inputEl.files[0];
+            showToast("正在解析 Excel 商品名冊...", "info");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    let addedCount = 0;
+
+                    workbook.SheetNames.forEach(sheetName => {
+                        const sheet = workbook.Sheets[sheetName];
+                        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+                        
+                        rows.forEach(row => {
+                            if (!row || row.length === 0) return;
+                            const cells = row.map(c => String(c).trim()).filter(Boolean);
+                            if (cells.length < 2) return;
+
+                            let detectedCode = '';
+                            let detectedName = '';
+
+                            for (let c of cells) {
+                                const m = c.match(/^(\d{5})(?:\/.*)?$/);
+                                if (m && m[1] !== '18504') {
+                                    detectedCode = m[1];
+                                    break;
+                                }
+                            }
+
+                            if (!detectedCode) return;
+
+                            for (let c of cells) {
+                                if (c !== detectedCode && !c.match(/^(\d{5})(?:\/.*)?$/) && !/^\d+$/.test(c) && !c.includes('http') && c.length >= 2) {
+                                    detectedName = c;
+                                    break;
+                                }
+                            }
+
+                            if (detectedCode && detectedName) {
+                                productCatalog[detectedCode] = detectedName;
+                                addedCount++;
+                            }
+                        });
+                    });
+
+                    persistCatalog();
+                    renderCatalogListInModal();
+                    renderSummaryList();
+                    renderHistoryList();
+                    showToast(`🎉 成功匯入！已收錄 ${Object.keys(productCatalog).length} 款商品品名！`, "success");
+                } catch (err) {
+                    showToast("解析失敗，請確認檔案格式", "error");
+                }
+                inputEl.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function openBackupSyncModal() {
+            document.getElementById('backup-modal')?.classList.remove('hidden');
+        }
+
+        function closeBackupSyncModal() {
+            document.getElementById('backup-modal')?.classList.add('hidden');
+        }
+
+        function openRoomModal() {
+            const rInp = document.getElementById('room-id-input');
+            if (rInp) rInp.value = window.__batchManager.getRoomId();
+            document.getElementById('room-modal')?.classList.remove('hidden');
+        }
+
+        function closeRoomModal() {
+            document.getElementById('room-modal')?.classList.add('hidden');
+        }
+
+        function saveRoomSettings() {
+            const rInp = document.getElementById('room-id-input');
+            const newRoom = (rInp ? rInp.value : '').trim() || 'default';
+            window.__batchManager.setRoom(newRoom);
+            closeRoomModal();
+            showToast(`已切換至進貨批次: [${newRoom}]`, "success");
+        }
+
+        function clearRoomDataWithConfirm() {
+            showModal(
+                "確定清空本批次所有資料？",
+                "清空後當前房號中所有商品數據將同步歸零，無法復原！",
+                [
+                    { text: "取消", class: "bg-slate-100 text-slate-700" },
+                    { text: "確認清空", class: "bg-rose-600 text-white font-bold", onClick: () => {
+                        window.scannedList = [];
+                        window.scannedSnSet.clear();
+                        updateStats();
+                        renderSummaryList();
+                        renderHistoryList();
+                        document.getElementById('latest-scan-content').innerHTML = `
+                            <i class="ph-thin ph-barcode text-4xl mb-1 block"></i>
+                            <p class="text-xs">已清空資料，等待刷入中</p>
+                        `;
+                        saveLocalFailSafe(window.__batchManager.getRoomId(), []);
+                        showToast("已清空當前批次所有資料", "info");
+                    }}
+                ]
+            );
+        }
+
+        function showToast(message, type = 'info') {
+            const existing = document.getElementById('toast-notification');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'toast-notification';
+            let bgClass = "bg-slate-900 text-white shadow-xl";
+            let icon = "ph-info";
+            if (type === 'success') {
+                bgClass = "bg-emerald-600 text-white shadow-emerald-500/30";
+                icon = "ph-check-circle";
+            } else if (type === 'duplicate') {
+                bgClass = "bg-rose-600 text-white shadow-rose-500/40";
+                icon = "ph-warning-octagon";
+            } else if (type === 'warning') {
+                bgClass = "bg-amber-500 text-slate-950 shadow-amber-500/30";
+                icon = "ph-warning";
+            } else if (type === 'error') {
+                bgClass = "bg-rose-700 text-white shadow-rose-700/40";
+                icon = "ph-x-circle";
+            }
+
+            toast.className = `fixed top-16 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold transition-all duration-300 ${bgClass} animate-in fade-in slide-in-from-top-4 max-w-[92vw] text-center pointer-events-auto`;
+            toast.innerHTML = `<i class="ph-bold ${icon} text-base flex-shrink-0"></i> <span>${message}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                if (toast && toast.parentNode) {
+                    toast.classList.add('opacity-0', '-translate-y-2');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        function showModal(title, desc, actions = null) {
+            const modal = document.getElementById('custom-modal');
+            const titleEl = document.getElementById('modal-title');
+            const descEl = document.getElementById('modal-desc');
+            const actionsEl = document.getElementById('modal-actions');
+            if (!modal) return;
+
+            titleEl.textContent = title;
+            descEl.textContent = desc;
+            actionsEl.innerHTML = '';
+
+            const defaultActions = actions || [{ text: "了解", class: "bg-brand-500 text-white font-bold" }];
+            defaultActions.forEach(act => {
+                const btn = document.createElement('button');
+                btn.className = `px-3.5 py-1.5 rounded-xl text-xs font-semibold ${act.class || 'bg-slate-100 text-slate-700'} transition active:scale-95`;
+                btn.textContent = act.text;
+                btn.onclick = () => {
+                    modal.classList.add('hidden');
+                    if (act.onClick) act.onClick();
+                };
+                actionsEl.appendChild(btn);
+            });
+            modal.classList.remove('hidden');
+        }
+
+        function loadRoomData() {
+            const currentRoom = window.__batchManager.getRoomId();
+            const localBackup = loadLocalFailSafe(currentRoom);
+            if (localBackup && localBackup.length > 0) {
+                window.scannedList = localBackup;
+                window.scannedSnSet = new Set(localBackup.map(it => it.sn));
+                showToast(`已載入 [${currentRoom}] 批次的 ${localBackup.length} 筆歷史紀錄！`, 'success');
+            } else {
+                window.scannedList = [];
+                window.scannedSnSet.clear();
+            }
+            updateStats();
+            renderSummaryList();
+            renderHistoryList();
+            updateSaveIndicator();
+        }
+
+        window.addEventListener('beforeunload', (e) => {
+            if (window.scannedList && window.scannedList.length > 0) {
+                e.preventDefault();
+                e.returnValue = '尚有已刷入商品資料，確定離開嗎？';
+            }
+        });
+
+        // 頁面啟動（DOM 準備完畢即刻執行，不延宕等待外網資源）
+        document.addEventListener('DOMContentLoaded', loadRoomData);
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            loadRoomData();
+        }
+    </script>
+</body>
+</html>
